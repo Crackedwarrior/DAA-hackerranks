@@ -1,0 +1,61 @@
+def maximumPeople(p, x, y, r):
+    n = len(p)
+    m = len(y)
+    
+    # Mapping of each town to clouds that cover it
+    town_coverage = {i: [] for i in range(n)}
+    cloud_population_coverage = [0] * m
+    
+    # Calculate cloud coverage for each cloud
+    for i in range(m):
+        cloud_start = y[i] - r[i]
+        cloud_end = y[i] + r[i]
+        
+        for j in range(n):
+            if cloud_start <= x[j] <= cloud_end:
+                town_coverage[j].append(i)
+                cloud_population_coverage[i] += p[j]
+    
+    # Initial number of people in sunny towns
+    initial_sunny_population = sum(p[j] for j in range(n) if len(town_coverage[j]) == 0)
+    
+    # Calculate number of people that would become sunny by removing each cloud
+    max_population_after_removal = 0
+    single_cloud_coverage = [0] * m
+    
+    for j in range(n):
+        if len(town_coverage[j]) == 1:
+            single_cloud_coverage[town_coverage[j][0]] += p[j]
+    
+    for i in range(m):
+        max_population_after_removal = max(max_population_after_removal, initial_sunny_population + single_cloud_coverage[i])
+    
+    return max_population_after_removal
+
+if __name__ == '__main__':
+    import sys
+    input = sys.stdin.read
+    data = input().split()
+    
+    idx = 0
+    n = int(data[idx])
+    idx += 1
+    
+    p = list(map(int, data[idx:idx + n]))
+    idx += n
+    
+    x = list(map(int, data[idx:idx + n]))
+    idx += n
+    
+    m = int(data[idx])
+    idx += 1
+    
+    y = list(map(int, data[idx:idx + m]))
+    idx += m
+    
+    r = list(map(int, data[idx:idx + m]))
+    idx += m
+    
+    result = maximumPeople(p, x, y, r)
+    print(result)
+
